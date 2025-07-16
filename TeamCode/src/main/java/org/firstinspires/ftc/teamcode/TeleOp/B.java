@@ -55,9 +55,9 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
-@TeleOp(name = "MecanumBlue", group = "TeleOOP")
+@TeleOp(name = "MecanumBlue_nolimit", group = "TeleOOP")
 
-public class B extends LinearOpMode {
+public class b2 extends LinearOpMode {
 
     public static boolean inRange(double number, double start, double end) {
         return number >= start && number <= end;
@@ -76,6 +76,7 @@ public class B extends LinearOpMode {
 
 
     ColorSensor colorSensor;// Hardware Device Object
+    boolean limit = true;
     double lefthandin = 0.3;
     double lefthandout = 1;
     double righthandin = 1 - lefthandin;
@@ -92,9 +93,9 @@ public class B extends LinearOpMode {
     double shouzhang0ed = 1;
     double shuzhang1op = 1;
     double shouzhang1ed = 0;
-    double chanziping = 1;
+    double chanziping = 0;
     double chanzidown = 0.45;
-    double chanziup = 0.29;
+    double chanziup = 0.53;
     double handchanziup = 0.6104;
     double jiazixiaobichanziup = 0;
     double jiazixiaobidown = 1;
@@ -110,6 +111,7 @@ public class B extends LinearOpMode {
     long startTime1 = 0;
     long startTime5 = 0;
     int lefthandlastposition = 5;
+    int lower_limit = 0;
     int one = 100;
     int two = 233;
     int lastxuanguaposition = 0;
@@ -176,7 +178,7 @@ public class B extends LinearOpMode {
         xuangua.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         xuangua.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         xuangua.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        xuangua.setDirection(DcMotorSimple.Direction.REVERSE);
+        //xuangua.setDirection(DcMotorSimple.Direction.REVERSE);
 //        lefthand.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -212,7 +214,7 @@ public class B extends LinearOpMode {
                         youshoubi.setPosition(youshouhandping);
                     }
                 }
-                saodijiqiren.setPosition(1 - gamepad1.left_stick_x);
+                saodijiqiren.setPosition(handleRange(gamepad1.left_stick_x,0,0.5));
                 if(gamepad2.ps){
                     yellow = !yellow;
                 }
@@ -330,8 +332,8 @@ public class B extends LinearOpMode {
                 if (jiazifan && !isSequenceStarted && !isSequenceStarted1 && !jiazizheng) {
                     if(!yellow) {
                         if (colorSensor.blue() < 300) {
-                            zhuazi1.setPower(1);
-                            zhuazi0.setPower(-1);
+                            zhuazi1.setPower(-1);
+                            zhuazi0.setPower(1);
                         } else {
                             jiazizheng = false;
                             get = true;
@@ -343,8 +345,8 @@ public class B extends LinearOpMode {
                             zhuazi1.setPower(0);
                             zhuazi0.setPower(0);
                         } else {
-                            zhuazi1.setPower(1);
-                            zhuazi0.setPower(-1);
+                            zhuazi1.setPower(-1);
+                            zhuazi0.setPower(1);
                         }
                     }
                 } else if (!jiazifan  && !isSequenceStarted && !isSequenceStarted1 && !jiazizheng) {
@@ -413,21 +415,34 @@ public class B extends LinearOpMode {
                         isSequenceStarted5 = false;
                     }
                 }
+                if(gamepad1.left_bumper){
+                    limit = false;
+                } else if (gamepad1.right_bumper) {
+                    limit = true;
+                }
+                if(gamepad1.b){
+                    lower_limit = xuangua.getCurrentPosition();
+                    limit = true;
+
+                }
                 if((gamepad1.left_trigger - gamepad1.right_trigger) != 0){
                     xuangua.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     lastxuanguaposition = xuanguacp;
-                    if(xuangua.getCurrentPosition() >= 1930){
-                        xuangua.setPower(handleRange((gamepad1.left_trigger - gamepad1.right_trigger),-1,0));
-                        telemetry.addLine("downonly");
-                    }
-                    else if(xuangua.getCurrentPosition() <= 0){
-                        xuangua.setPower(handleRange((gamepad1.left_trigger - gamepad1.right_trigger),0,1));
-                        telemetry.addLine("uponly");
-                    }
-                    else {
-                        xuangua.setPower((gamepad1.left_trigger - gamepad1.right_trigger));
-                        telemetry.addLine("up and down");
+                    if(limit) {
+                        if (xuangua.getCurrentPosition() >= lower_limit + 2150) {
+                            xuangua.setPower(handleRange((gamepad1.left_trigger - gamepad1.right_trigger), -1, 0));
+                            telemetry.addLine("downonly");
+                        } else if (xuangua.getCurrentPosition() <= lower_limit) {
+                            xuangua.setPower(handleRange((gamepad1.left_trigger - gamepad1.right_trigger), 0, 1));
+                            telemetry.addLine("uponly");
+                        } else {
+                            xuangua.setPower((gamepad1.left_trigger - gamepad1.right_trigger));
+                            telemetry.addLine("up and down");
 
+                        }
+                    }else{
+                        xuangua.setPower((gamepad1.left_trigger - gamepad1.right_trigger));
+                        telemetry.addLine("no_limit");
                     }
                 }else {
                     xuangua.setTargetPosition(lastxuanguaposition);
