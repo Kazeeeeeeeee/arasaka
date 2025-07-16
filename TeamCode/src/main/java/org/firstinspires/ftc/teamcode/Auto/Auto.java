@@ -54,9 +54,9 @@ public class Auto extends LinearOpMode{   //60cm:25unit          1 cm: 5/12 unit
     double youshouhandup = 1 - zuoshouhandup;
     double youshouhanddon = 1 - zuoshouhanddon;
     double youshouhandping = 1 - zuoshouhandping;
-    double chanziping = 1;
+    double chanziping = 0;
     double chanzidown = 0.45;
-    double chanziup = 0.29;
+    double chanziup = 0.53;
     double handchanziup = 0.6104;
     double jiazixiaobichanziup = 0;
     double jiazixiaobidown = 1;
@@ -91,13 +91,13 @@ public class Auto extends LinearOpMode{   //60cm:25unit          1 cm: 5/12 unit
 
 
     @Override
-    public void runOpMode() throws InterruptedException {
+        public void runOpMode() throws InterruptedException {
         Pose2d beginPose = new Pose2d(50 - 25 - 25 - 1,75 - 25 - 50,Math.PI*1.5);
         Pose2d secondPose = new Pose2d(35.5 - 25,-13,Math.PI*1.5);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         DcMotorEx frontLeftMotor = (DcMotorEx) hardwareMap.dcMotor.get("motor1");
         DcMotorEx backLeftMotor = (DcMotorEx) hardwareMap.dcMotor.get("motor2");
-        DcMotorEx frontRightMotor = (DcMotorEx) hardwareMap.dcMotor.get("motor0");
+        DcMotorEx frontRightMotor = (DcMotorEx) hardwareMap.dcMotor.get ("motor0");
         DcMotorEx backRightMotor = (DcMotorEx) hardwareMap.dcMotor.get("motor3");
         DcMotorEx xuangua = (DcMotorEx) hardwareMap.dcMotor.get("motor5");
         Servo zuoshoubi = hardwareMap.get(Servo.class,"servo6");
@@ -108,13 +108,15 @@ public class Auto extends LinearOpMode{   //60cm:25unit          1 cm: 5/12 unit
         Servo righthand = hardwareMap.get(Servo.class,"servo5");
         Servo chanzi = hardwareMap.get(Servo.class,"servo7");
 
+
+
 //        lefthand.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        lefthand.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        lefthand.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         xuangua.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         xuangua.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         xuangua.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        xuangua.setDirection(DcMotorSimple.Direction.REVERSE);
+        //xuangua.setDirection(DcMotorSimple.Direction.REVERSE);
 //        lefthand.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -170,19 +172,21 @@ public class Auto extends LinearOpMode{   //60cm:25unit          1 cm: 5/12 unit
 //                        .build())
 //                );
         Actions.runBlocking(new SequentialAction(drive.actionBuilder(beginPose)
-                .splineToLinearHeading(new Pose2d(22,-8.5,Math.PI*1.3),Math.PI*1.5)
+                .splineToLinearHeading(new Pose2d(20,-8.5,Math.PI*1.3),Math.PI*1.5)
                 .stopAndAdd(new shenshoufangdongxi())
-                .splineToLinearHeading(new Pose2d(33.5 - 25,-16,Math.PI*1.5),Math.PI*1.3)
+                .splineToLinearHeading(new Pose2d(33.5  - 25,-16,Math.PI*1.5),Math.PI*1.5)
                 .stopAndAdd(new Auto.zhengshouGetSpec())
-                .splineToLinearHeading(new Pose2d(21,-9.5,Math.PI*1.3),Math.PI*1.5)
+                .waitSeconds(0.1)
+                .splineToLinearHeading(new Pose2d(19 + 0.5 ,-9.5 + 0.5,Math.PI*1.3),Math.PI*1.5)
                 .stopAndAdd(new ParallelAction(
                         new Auto.shenshoufangdongxi()
                 ))
 //                .setReversed(false)
-                .splineToLinearHeading(new Pose2d(35.5 - 25 + 12 - 8*5/12,-16.5,Math.PI*1.5),Math.PI*1.3)
+                .splineToLinearHeading(new Pose2d(33.5 - 25 + 12 - 8*5/12,-16.5,Math.PI*1.5),Math.PI*1.3)
 //                .splineTo(new Vector2d(35.5 - 25 + 12 - 8*5/12,-16.5),Math.PI*1.5)
                 .stopAndAdd(new Auto.zhengshouGetSpec())
-                .splineToLinearHeading(new Pose2d(22,-8.5,Math.PI*1.3),Math.PI*1.5)
+                .waitSeconds(0.25)
+                .splineToLinearHeading(new Pose2d(18,-8.5,Math.PI*1.3),Math.PI*1.5)
 //                .setReversed(true)
 //                .splineTo(new Vector2d(22,-8.5),-Math.PI*1.75)
                 .stopAndAdd(new ParallelAction(
@@ -190,10 +194,10 @@ public class Auto extends LinearOpMode{   //60cm:25unit          1 cm: 5/12 unit
 
                 ))
                 .setReversed(false)
-                .splineToLinearHeading(new Pose2d(8,-40,Math.PI/15),Math.PI*1.3)
+                .splineToLinearHeading(new Pose2d(8,-38,Math.PI/15),Math.PI*1.3)
 //                .splineTo(new Vector2d(10,-40),Math.PI/15)
                 .stopAndAdd(new Auto.xiaozhengshouGetSpec())
-                .splineToLinearHeading(new Pose2d(22,-8.5,Math.PI*1.3),Math.PI/15)
+                .splineToLinearHeading(new Pose2d(20,-8.5,Math.PI*1.3),Math.PI/15)
 //                .setReversed(true)
 //                .splineTo(new Vector2d(42.5 - 25,48 - 55),-Math.PI*1.75)
                 .stopAndAdd(new ParallelAction(
@@ -220,7 +224,7 @@ public class Auto extends LinearOpMode{   //60cm:25unit          1 cm: 5/12 unit
             xuangua.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             xuangua.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             xuangua.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            xuangua.setDirection(DcMotorSimple.Direction.REVERSE);
+           // xuangua.setDirection(DcMotorSimple.Direction.REVERSE);
             long startTimeUp = System.currentTimeMillis();
             zuoshoubi.setPosition(zuoshouhandping);
             youshoubi.setPosition(youshouhandping);
@@ -229,7 +233,7 @@ public class Auto extends LinearOpMode{   //60cm:25unit          1 cm: 5/12 unit
                 shouzhang0.setPosition(shuzhang0op);
                 long currentTimeUP = System.currentTimeMillis() - startTimeUp;
                 if(currentTimeUP < 2000){
-                    xuangua.setTargetPosition(1930);
+                    xuangua.setTargetPosition(2200);
                     xuangua.setPower(1);
                     xuangua.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 } else if (currentTimeUP < 3000) {
